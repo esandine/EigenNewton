@@ -177,8 +177,31 @@ public class Mat{
 		}
 		//you now have a pivotal one so you can move down a row
 		row++;
-		printMat();
 	    }
 	}
+    }
+
+    //inverse finds the inverse of square matrices
+    public Mat inverse(){
+	Mat big = new Mat(getRows(), 2*getCols());
+	for(int j = 0; j < 2*getCols(); j++){
+	    if(j<getCols()){
+		for(int i = 0; i < getRows(); i++){
+		    big.setEntry(i,j,getEntry(i,j));
+		}
+	    }else{
+		big.setEntry(j-getCols(),j,1);
+	    }
+	}
+	big.rowReduce();
+	big.printMat();
+	Mat ret = new Mat(getRows());
+	for(int i = 0; i< getRows(); i++){
+	    for(int j = 0; j < getCols(); j++){
+		ret.setEntry(i,j,big.getEntry(i,j+getRows()));
+	    }
+	}
+	ret.printMat();
+	return ret;
     }
 }
