@@ -78,6 +78,7 @@ public class Mat{
 	}
 	return printstr;
     }
+
     public void printMat(){
 	System.out.println(this);
     }
@@ -163,19 +164,20 @@ public class Mat{
 	int row = 0;
 	for(int col = 0; col < getCols(); col++){
 	    int pivotalrow=row;
-	    while((pivotalrow< getRows())&&(Math.abs(getEntry(row,col))<.00001)){
+	    while((pivotalrow< getRows())&&(Math.abs(getEntry(pivotalrow,col))<.00001)){
 		pivotalrow+=1;
 	    }
 	    if(pivotalrow<getRows()){//if it finds a pivotal one
 		swapRows(row,pivotalrow);
 		scaleRow(row,1/getEntry(row,col));   
-		for(pivotalrow=row; pivotalrow < getRows(); pivotalrow++){//subtract from the other pivotal ones
-		    if(Math.abs(getEntry(pivotalrow,col))>.0001){
-			addRow(pivotalrow, row, getEntry(pivotalrow,col));
+		for(pivotalrow=0; pivotalrow < getRows(); pivotalrow++){//subtract from the other pivotal ones
+		    if((pivotalrow!=row)&&(Math.abs(getEntry(pivotalrow,col))>.0001)){
+			addRow(pivotalrow, row, -getEntry(pivotalrow,col));
 		    }
 		}
 		//you now have a pivotal one so you can move down a row
 		row++;
+		printMat();
 	    }
 	}
     }
