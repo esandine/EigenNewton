@@ -1,13 +1,16 @@
 public class Driver{
     public static void main(String[] args){
-	Mat m1 = new Mat(1,2);
+	Mat m1 = new Mat(4,6);
 	m1.niceRandomize();
 	m1.printMat();
-	Mat m2 = new Mat(2,1);
-	m2.niceRandomize();
-	m2.printMat();
-	m1.lMult(m2);
-	System.out.println("m2 times m1");
+	System.out.println("scale row 3 by 2");
+	m1.scaleRow(2,2);
+	m1.printMat();
+	System.out.println("swap row 2 and 4");
+	m1.swapRows(1,3);
+	m1.printMat();
+	m1.addRow(0,3,-1);
+	System.out.println("subtract row 4 from row 1");
 	m1.printMat();
     }
 }

@@ -101,6 +101,11 @@ public class Mat{
 	}
     }
 
+    public void makeIdentity(){
+	for(int i = 0; i < getRows(); i++){
+	    setEntry(i,i,1);
+	}
+    }
     //mult multiplied two matrices together
     public static Mat mult(Mat A, Mat B){
 	Mat ret = new Mat(A.getRows(), B.getCols());
@@ -122,4 +127,33 @@ public class Mat{
 	copyMat(mult(this, A));
     }
 
+    //ROW REDUCTION
+
+    //row operations
+    //scaleRow scales a row by a constant
+    public void scaleRow(int r, float scale){
+	Mat l = new Mat(getRows());
+	l.makeIdentity();
+	l.setEntry(r,r,scale);
+	lMult(l);
+    }
+
+    //swapRows swaps two rows
+    public void swapRows(int r1, int r2){
+	Mat l = new Mat(getRows());
+	l.makeIdentity();
+	l.setEntry(r1,r1,0);
+	l.setEntry(r2,r2,0);
+	l.setEntry(r1,r2,1);
+	l.setEntry(r2,r1,1);
+	lMult(l);
+    }
+
+    //addRow adds a multiple of row r2 to row r1
+    public void addRow(int r1, int r2, int scale){
+	Mat l = new Mat(getRows());
+	l.makeIdentity();
+	l.setEntry(r1,r2,scale);
+	lMult(l);
+    }
 }
