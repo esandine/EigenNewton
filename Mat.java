@@ -119,6 +119,7 @@ public class Mat{
 	return ret;
     }
 
+    //multiply the given matrix my left and right respectively
     public void lMult(Mat A){
 	copyMat(mult(A, this));
     }
@@ -150,10 +151,32 @@ public class Mat{
     }
 
     //addRow adds a multiple of row r2 to row r1
-    public void addRow(int r1, int r2, int scale){
+    public void addRow(int r1, int r2, float scale){
 	Mat l = new Mat(getRows());
 	l.makeIdentity();
 	l.setEntry(r1,r2,scale);
 	lMult(l);
+    }
+
+    //rowReduce row reduces the matrix. It does this by starting at the upper left. If there is a pivotal one in the row, it flips it to the top.
+    public void rowReduce(){
+	int row = 0;
+	for(int col = 0; col < getCols(); col++){
+	    int pivotalrow=row;
+	    while((pivotalrow< getRows())&&(Math.abs(getEntry(row,col))<.00001)){
+		pivotalrow+=1;
+	    }
+	    if(pivotalrow<getRows()){//if it finds a pivotal one
+		swapRows(row,pivotalrow);
+		scaleRow(row,1/getEntry(row,col));   
+		for(pivotalrow=row; pivotalrow < getRows(); pivotalrow++){//subtract from the other pivotal ones
+		    if(Math.abs(getEntry(pivotalrow,col))>.0001){
+			addRow(pivotalrow, row, getEntry(pivotalrow,col));
+		    }
+		}
+		//you now have a pivotal one so you can move down a row
+		row++;
+	    }
+	}
     }
 }
