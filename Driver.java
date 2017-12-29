@@ -12,6 +12,6 @@ public class Driver{
 	guess.setEntry(0,0,1);
 	guess.setEntry(1,0,1);
 	guess.setEntry(2,0,1);
-	EigenNewton.newtonsMethod(m1,guess);
+	EigenNewton.newtonsMethod1(m1,1,2);
     }
 }
