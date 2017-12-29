@@ -3,7 +3,7 @@ public class Mat{
     //Variables
     private int rows;
     private int cols;
-    private float[][] data;
+    private double[][] data;
     
     //Mutators
     public void setRows(int r){
@@ -14,15 +14,15 @@ public class Mat{
 	cols = c;
     }
     public void resetData(){
-	data = new float[rows][cols];
+	data = new double[rows][cols];
     }
-    public void setEntry(int r,int c,float dat){
+    public void setEntry(int r,int c,double dat){
 	data[r][c]=dat;
     }
-    public void addEntry(int r, int c, float dat){
+    public void addEntry(int r, int c, double dat){
 	setEntry(r, c, getEntry(r,c)+dat);
     }
-    public void multEntry(int r, int c, float s){
+    public void multEntry(int r, int c, double s){
 	setEntry(r, c, getEntry(r,c)*c);
     }
     public void copyMat(Mat A){
@@ -43,7 +43,7 @@ public class Mat{
     public int getCols(){
 	return cols;
     }
-    public float getEntry(int r,int c){
+    public double getEntry(int r,int c){
 	return data[r][c];
     }
     
@@ -58,6 +58,9 @@ public class Mat{
 	this(rows, rows);
     }
 
+    public Mat(){
+	this(0);
+    }
     public Mat(Mat m){
 	copyMat(m);
     }
@@ -66,12 +69,22 @@ public class Mat{
 	this(mult(m1,m2));
     }
 
+    public Mat(double a, double b, double c, double d){
+	setRows(2);
+	setCols(2);
+	resetData();
+	setEntry(0,0,a);
+	setEntry(0,1,b);
+	setEntry(1,0,c);
+	setEntry(1,1,d);
+    }
+
     //print function
     public String toString(){
 	String printstr="";
 	for(int i = 0; i<getRows(); i++){
 	    for(int j = 0; j<getCols(); j++){
-		printstr+=Float.toString(getEntry(i,j));
+		printstr+=Double.toString(getEntry(i,j));
 		printstr+=" ";
 	    }
 	    printstr+="\n";
@@ -87,7 +100,7 @@ public class Mat{
     public void randomize(){
 	for(int i = 0; i<rows; i++){
 	    for(int j=0; j<cols; j++){
-		setEntry(i,j,(float)Math.random());
+		setEntry(i,j,(double)Math.random());
 	    }
 	}
     }
@@ -133,7 +146,7 @@ public class Mat{
 
     //row operations
     //scaleRow scales a row by a constant
-    public void scaleRow(int r, float scale){
+    public void scaleRow(int r, double scale){
 	Mat l = new Mat(getRows());
 	l.makeIdentity();
 	l.setEntry(r,r,scale);
@@ -152,7 +165,7 @@ public class Mat{
     }
 
     //addRow adds a multiple of row r2 to row r1
-    public void addRow(int r1, int r2, float scale){
+    public void addRow(int r1, int r2, double scale){
 	Mat l = new Mat(getRows());
 	l.makeIdentity();
 	l.setEntry(r1,r2,scale);
@@ -164,14 +177,14 @@ public class Mat{
 	int row = 0;
 	for(int col = 0; col < getCols(); col++){
 	    int pivotalrow=row;
-	    while((pivotalrow< getRows())&&(Math.abs(getEntry(pivotalrow,col))<.00001)){
+	    while((pivotalrow< getRows())&&(Math.abs(getEntry(pivotalrow,col))<.0000000001)){
 		pivotalrow+=1;
 	    }
 	    if(pivotalrow<getRows()){//if it finds a pivotal one
 		swapRows(row,pivotalrow);
 		scaleRow(row,1/getEntry(row,col));   
 		for(pivotalrow=0; pivotalrow < getRows(); pivotalrow++){//subtract from the other pivotal ones
-		    if((pivotalrow!=row)&&(Math.abs(getEntry(pivotalrow,col))>.0001)){
+		    if((pivotalrow!=row)&&(Math.abs(getEntry(pivotalrow,col))>.0000000001)){
 			addRow(pivotalrow, row, -getEntry(pivotalrow,col));
 		    }
 		}
@@ -194,14 +207,23 @@ public class Mat{
 	    }
 	}
 	big.rowReduce();
-	big.printMat();
 	Mat ret = new Mat(getRows());
 	for(int i = 0; i< getRows(); i++){
 	    for(int j = 0; j < getCols(); j++){
 		ret.setEntry(i,j,big.getEntry(i,j+getRows()));
 	    }
 	}
-	ret.printMat();
 	return ret;
+    }
+
+    //size finds the size of a matrix
+    public double size(){
+	double sum = 0;
+	for(int i = 0; i < getRows(); i++){
+	    for(int j = 0; j < getCols(); j++){
+		sum+=Math.pow(getEntry(i,j),2);
+	    }
+	}
+	return Math.sqrt(sum);
     }
 }
