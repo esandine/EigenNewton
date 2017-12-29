@@ -120,6 +120,23 @@ public class Mat{
 	    setEntry(i,i,1);
 	}
     }
+
+    //multiply a vector by a scalar
+    public static Mat mult(Mat A, double c){
+	Mat ret = new Mat(A.getRows(), A.getCols());
+	for(int i = 0; i < A.getRows(); i++){
+	    for(int j = 0; j < A.getCols(); j++){
+		ret.setEntry(i,j,c*A.getEntry(i,j));
+	    }
+	}
+	return ret;
+    }
+    
+    //multiply this vector by a scalar
+    public void mult(double c){
+	copyMat(mult(this,c));
+    }
+
     //mult multiplied two matrices together
     public static Mat mult(Mat A, Mat B){
 	Mat ret = new Mat(A.getRows(), B.getCols());
@@ -225,5 +242,19 @@ public class Mat{
 	    }
 	}
 	return Math.sqrt(sum);
+    }
+
+    //add adds two matrices together
+    public static Mat add(Mat m1, Mat m2){
+	Mat ret = new Mat(m1.getRows(), m2.getCols());
+	for(int i = 0; i < m1.getRows(); i++){
+	    for(int j = 0; j < m1.getCols(); j++){
+		ret.setEntry(i,j,m1.getEntry(i,j)+m2.getEntry(i,j));
+	    }
+	}
+	return ret;
+    }
+    public void add(Mat m2){
+	copyMat(add(this, m2));
     }
 }

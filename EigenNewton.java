@@ -49,4 +49,29 @@ public class EigenNewton{
 	Dfmatrix = Df(matrix,guess);
 	return fmatrix.size()*Math.pow(Dfmatrix.inverse().size(),2)*Math.sqrt(12);
     }
+
+    //newtonStep does one step of newton's method given the current guess
+    public static Mat newtonStep(Mat matrix, Mat guess){
+	Mat ret = new Mat();
+	ret=Mat.add(guess,Mat.mult(Mat.mult(Df(matrix,guess).inverse(),f(matrix,guess)),-1));
+	return ret;
+    }
+
+    //newtonsMethod does newton's method printing out guesses and kantorovich values along the way
+    public static void newtonsMethod(Mat matrix, Mat initialguess){
+        Mat guess = new Mat(3,1);
+	guess = initialguess;
+        int i=0;
+        while(f(matrix,guess).size()>.00001){
+            System.out.println("This is guess: "+i);
+            guess.printMat();
+            System.out.println("This is kantorovich of the guess");
+            System.out.println(kantorovich(matrix,guess));
+            guess=newtonStep(matrix,guess);
+            i++;
+        }
+	System.out.println("Final guess");
+	guess.printMat();
+    }
+    
 }
