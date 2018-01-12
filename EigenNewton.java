@@ -120,33 +120,28 @@ public class EigenNewton{
     }
     
     //image creation stuff
-    public static String toPPM(int[][] data){
-	String ret = "P3 "+data.length+" "+data[0].length+" 255\n";
-	for(int i = 0; i < data.length; i++){
-	    for(int j = 0; j < data[0].length; j++){
-		if(data[i][j]==0){
-		    ret+="0 0 0";
-		}else if(data[i][j]==1){
-		    ret+="255 0 0";
-		}else if(data[i][j]==2){
-		    ret+="0 0 255";
-		}else{
-		    ret+="0 255 0";
-		}
-		ret+="\n";
-	    }
-	    System.out.println(i);
-	}
-	return ret;
-    }
-
-    public static void write(String content, String name){
+    public static void writeToPPM(int[][] data, String name){
 	try{
 	    File f = new File(name);
 	    f.delete();
 	    f.createNewFile();
 	    FileWriter w = new FileWriter(f, true);
-	    w.write(content);
+	    w.write("P3 "+data.length+" "+data[0].length+" 255\n");
+	    for(int i = 0; i < data.length; i++){
+		for(int j = 0; j < data[0].length; j++){
+		    if(data[i][j]==0){
+			w.append("0 0 0");
+		    }else if(data[i][j]==1){
+			w.append("255 0 0");
+		    }else if(data[i][j]==2){
+			w.append("0 0 255");
+		    }else{
+			w.append("0 255 0");
+		    }
+		    w.append("\n");
+		}
+		System.out.println(i);
+	    }
 	    w.close();
 	}catch(IOException e){
 	    System.out.println(e);
@@ -155,7 +150,7 @@ public class EigenNewton{
     
     //does the process of writing an image file and stuff like that
     public static void wholeShabang(Mat matrix, double eigen1, double eigen2, int[] vars, double scale, String filename){
-	write(toPPM(newtonsMethod1(matrix, eigen1, eigen2, vars, scale)),filename);
+	writeToPPM(newtonsMethod1(matrix, eigen1, eigen2, vars, scale),filename);
     }
 
     //tests every combination of variables, and goes from 10^-2 to 10^2
