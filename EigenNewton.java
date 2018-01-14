@@ -60,18 +60,22 @@ public class EigenNewton{
 	return ret;
     }
 
-    //newtonsMethod does newton's method printing out guesses and kantorovich values along the way
-    public static Mat newtonsMethod(Mat matrix, Mat initialguess){
+    //newtonsMethod does newton's method returning an object containing the guess, and how long it took to get there
+    public static NewtonRet newtonsMethod(Mat matrix, Mat initialguess, double scale){
         Mat guess = new Mat(3,1);
 	guess = initialguess;
-        while(f(matrix,guess).size()>.000000001){
-	    if(Math.abs(guess.getEntry(0,0))+Math.abs(guess.getEntry(1,0))<.00001){
-		return guess;//if we collapse to zero vector
+	int guesses = 0;
+        while(f(matrix,guess).size()>Math.pow(10,scale-6)){
+	    if(Math.abs(guess.getEntry(0,0))+Math.abs(guess.getEntry(1,0))<Math.pow(10,scale-6)){
+		NewtonRet ret = new NewtonRet(guess.getEntry(0,0), guess.getEntry(1,0), guess.getEntry(2,0), guesses);
+		return ret;
 	    }else{
 		guess=newtonStep(matrix,guess);
+		guesses++;
 	    }
-        }
-	return guess;
+	}
+	NewtonRet ret = new NewtonRet(guess.getEntry(0,0), guess.getEntry(1,0), guess.getEntry(2,0), guesses);
+	return ret;
     }
 
     //newtonsMethod1 is the first test. It runs newton's method and returns a 500x500 matrix representing which initial guesses converged to which eigenvalues when the initial guess was changed in the range
@@ -82,45 +86,52 @@ public class EigenNewton{
     //   [1,0,1] means vary the first entry of the eigenvector and the eigenvalue
     //   [0,1,1] means vary the second entry of the eigenvector and the eigenvalue
     //scale specifies what the scale is that the variations are taking place in. 0 means -1 to 1. 5 means -1*10^5 to 1*10^5 and etc. 
-    public static int[][] newtonsMethod1(Mat matrix, double eigen1, double eigen2, int[] vars, double scale){
+    public static NewtonRet[][] newtonsMethod1(Mat matrix, double eigen1, double eigen2, int[] vars, double scale){
 	Mat initialguess = new Mat(3,1);
-	int[][] ret = new int[500][500];
-	for(int i = -250; i < 250; i++){
-	    for(int j = -250; j < 250; j++){
-		if(vars[0]==1&&vars[1]==1){
+	NewtonRet[][] ret = new NewtonRet[500][500];
+
+	if(vars[0]==1&&vars[1]==1){
+	    for(int i = -250; i < 250; i++){
+		for(int j = -250; j < 250; j++){
 		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
 		    initialguess.setEntry(1,0,j/250.0*Math.pow(10,scale));
-		}else if((vars[0]==1)&&(vars[2]==1)){
-		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
-		    initialguess.setEntry(2,0,j/250.0*Math.pow(10,scale));
-		}else if((vars[1]==1)&&(vars[2]==1)){
-		    initialguess.setEntry(1,0,i/100.0);
-		    initialguess.setEntry(2,0,j/100.0);
-		}else{
-		    System.out.println("BAD PARAMETERS FOR GUESSES");
-		}
-		initialguess=newtonsMethod(matrix, initialguess);
-		if((i==0)||(j==0)){
-		    ret[i+250][j+250]=-1;//-1 corresponds to something else
-		    //this draws the axis
-		}
-		else if(Math.abs(initialguess.getEntry(0,0))+Math.abs(initialguess.getEntry(1,0))<.00001){
-		    ret[i+250][j+250]=0; //0 corresponds to the zero eigenvector
-		}else if(Math.abs(initialguess.getEntry(2,0)-eigen1)<.001){
-		    ret[i+250][j+250]=1; //1 corresponds to the first eigenvalue
-		}else if(Math.abs(initialguess.getEntry(2,0)-eigen2)<.001){
-		    ret[i+250][j+250]=2; //2 corresponds to the second eigenvalue
-		}else{
-		    initialguess.printMat();
-		    ret[i+250][j+250]=-1;//-1 corresponds to something else
+		    ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
+		    System.out.print(i);
+		    System.out.print(" ");
+		    System.out.println(j);
 		}
 	    }
+	
+	}else if((vars[0]==1)&&(vars[2]==1)){
+	    for(int i = -250; i < 250; i++){
+		for(int j = -250; j < 250; j++){
+		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
+		    initialguess.setEntry(2,0,j/250.0*Math.pow(10,scale));
+		    ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
+		    System.out.print(i);
+		    System.out.print(" ");
+		    System.out.println(j);
+		}
+	    }
+	}else if((vars[1]==1)&&(vars[2]==1)){
+	    for(int i = -250; i < 250; i++){
+		for(int j = -250; j < 250; j++){
+		    initialguess.setEntry(1,0,i/100.0);
+		    initialguess.setEntry(2,0,j/100.0);
+		    ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
+		    System.out.print(i);
+		    System.out.print(" ");
+		    System.out.println(j);
+		}
+	    }
+	}else{
+	    System.out.println("BAD PARAMETERS FOR GUESSES");
 	}
 	return ret;
     }
     
     //image creation stuff
-    public static void writeToPPM(int[][] data, String name){
+    public static void writeToPPM(NewtonRet[][] data, String name, double eigen1, double eigen2, double scale){
 	try{
 	    File f = new File(name);
 	    f.delete();
@@ -129,14 +140,14 @@ public class EigenNewton{
 	    w.write("P3 "+data.length+" "+data[0].length+" 255\n");
 	    for(int i = 0; i < data.length; i++){
 		for(int j = 0; j < data[0].length; j++){
-		    if(data[i][j]==0){
-			w.append("0 0 0");
-		    }else if(data[i][j]==1){
-			w.append("255 0 0");
-		    }else if(data[i][j]==2){
-			w.append("0 0 255");
+		    if(Math.abs(data[i][j].getX1())+Math.abs(data[i][j].getX2())<Math.pow(10, scale-6)){
+			w.append("0 0 0");//corresponds to newton's method collapsing to zero eigenvector
+		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen1)/eigen1<Math.pow(10,scale - 6)){
+			w.append("255 0 0");//percent difference from first eigenvalue is small
+		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen2)/eigen2<Math.pow(10, scale-6)){
+			w.append("0 0 255");//percent difference from second eigenvalue is small
 		    }else{
-			w.append("0 255 0");
+			w.append("0 255 0");//some thing else happened
 		    }
 		    w.append("\n");
 		}
@@ -150,7 +161,7 @@ public class EigenNewton{
     
     //does the process of writing an image file and stuff like that
     public static void wholeShabang(Mat matrix, double eigen1, double eigen2, int[] vars, double scale, String filename){
-	writeToPPM(newtonsMethod1(matrix, eigen1, eigen2, vars, scale),filename);
+	writeToPPM(newtonsMethod1(matrix, eigen1, eigen2, vars, scale),filename,eigen1, eigen2, scale);
     }
 
     //tests every combination of variables, and goes from 10^-2 to 10^2
