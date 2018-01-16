@@ -65,8 +65,8 @@ public class EigenNewton{
         Mat guess = new Mat(3,1);
 	guess = initialguess;
 	int guesses = 0;
-        while(f(matrix,guess).size()>Math.pow(10,scale-6)){
-	    if(Math.abs(guess.getEntry(0,0))+Math.abs(guess.getEntry(1,0))<Math.pow(10,scale-6)){
+        while(f(matrix,guess).size()>Math.pow(10,scale-3)){
+	    if(guesses>25){
 		NewtonRet ret = new NewtonRet(guess.getEntry(0,0), guess.getEntry(1,0), guess.getEntry(2,0), guesses);
 		return ret;
 	    }else{
@@ -74,6 +74,7 @@ public class EigenNewton{
 		guesses++;
 	    }
 	}
+	System.out.println(guesses);
 	NewtonRet ret = new NewtonRet(guess.getEntry(0,0), guess.getEntry(1,0), guess.getEntry(2,0), guesses);
 	return ret;
     }
@@ -89,16 +90,15 @@ public class EigenNewton{
     public static NewtonRet[][] newtonsMethod1(Mat matrix, double eigen1, double eigen2, int[] vars, double scale){
 	Mat initialguess = new Mat(3,1);
 	NewtonRet[][] ret = new NewtonRet[500][500];
-
 	if(vars[0]==1&&vars[1]==1){
 	    for(int i = -250; i < 250; i++){
 		for(int j = -250; j < 250; j++){
 		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
 		    initialguess.setEntry(1,0,j/250.0*Math.pow(10,scale));
 		    ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
-		    System.out.print(i);
+		    /*System.out.print(i);
 		    System.out.print(" ");
-		    System.out.println(j);
+		    System.out.println(j);*/
 		}
 	    }
 	
@@ -108,9 +108,9 @@ public class EigenNewton{
 		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
 		    initialguess.setEntry(2,0,j/250.0*Math.pow(10,scale));
 		    ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
-		    System.out.print(i);
+		    /*System.out.print(i);
 		    System.out.print(" ");
-		    System.out.println(j);
+		    System.out.println(j);*/
 		}
 	    }
 	}else if((vars[1]==1)&&(vars[2]==1)){
@@ -119,9 +119,9 @@ public class EigenNewton{
 		    initialguess.setEntry(1,0,i/100.0);
 		    initialguess.setEntry(2,0,j/100.0);
 		    ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
-		    System.out.print(i);
+		    /*System.out.print(i);
 		    System.out.print(" ");
-		    System.out.println(j);
+		    System.out.println(j);*/
 		}
 	    }
 	}else{
@@ -140,14 +140,15 @@ public class EigenNewton{
 	    w.write("P3 "+data.length+" "+data[0].length+" 255\n");
 	    for(int i = 0; i < data.length; i++){
 		for(int j = 0; j < data[0].length; j++){
-		    if(Math.abs(data[i][j].getX1())+Math.abs(data[i][j].getX2())<Math.pow(10, scale-6)){
+		    int color = 255 - 10*data[i][j].getNumSteps();
+		    if(color<25){
 			w.append("0 0 0");//corresponds to newton's method collapsing to zero eigenvector
 		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen1)/eigen1<Math.pow(10,scale - 6)){
-			w.append("255 0 0");//percent difference from first eigenvalue is small
+			w.append(Integer.toString(color)+" 0 0");//percent difference from first eigenvalue is small
 		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen2)/eigen2<Math.pow(10, scale-6)){
-			w.append("0 0 255");//percent difference from second eigenvalue is small
+			w.append("0 0 "+Integer.toString(color));//percent difference from second eigenvalue is small
 		    }else{
-			w.append("0 255 0");//some thing else happened
+			w.append("0 "+Integer.toString(color)+" 0");//some thing else happened
 		    }
 		    w.append("\n");
 		}
