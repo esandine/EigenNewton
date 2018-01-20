@@ -8,6 +8,6 @@ public class Driver{
 	m1.rMult(m2);
 	System.out.println("This is the current matrix to find eigenvectors of");
 	m1.printMat();
-	EigenNewton.genImages(m1,2,1,"simpletest");
+	EigenNewton.genImages(m1,2.0,1.0,"simpletest","stash");
     }
 }
