@@ -166,7 +166,7 @@ public class EigenNewton{
     }
 
     //tests every combination of variables, and goes from 10^-2 to 10^2
-    public static void genImages(Mat matrix, double eigen1, double eigen2, String filebase){
+    public static void genImages(Mat matrix, double eigen1, double eigen2, String filebase, String stashname){
 	int[] vars = {1,1,0};
 	for(int i = -2; i < 3; i++){
 	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xy_zoom_"+i+".ppm");
@@ -181,5 +181,6 @@ public class EigenNewton{
 	for(int i = -2; i < 3; i++){
 	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xz_zoom_"+i+".ppm");
 	}
+	Fixerupper.stash(stashname);
     }
 }
