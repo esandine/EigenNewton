@@ -23,6 +23,7 @@ public class Fixerupper{
 	    Runtime rt = Runtime.getRuntime();
 	    Process pr = rt.exec("mkdir "+dirname);
 	    for(int i = 0; i < files.length; i++){
+		System.out.println(files[i].getName());
 		if(files[i].getName().endsWith(".ppm")){
 		    name=convertPPMtoJPG(files[i].getName());
 		    pr = rt.exec("mv "+name+" "+dirname+"/");
