@@ -143,9 +143,9 @@ public class EigenNewton{
 		    int color = 255 - 10*data[i][j].getNumSteps();
 		    if(color<25){
 			w.append("0 0 0");//corresponds to newton's method collapsing to zero eigenvector
-		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen1)/eigen1<Math.pow(10,scale - 6)){
+		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen1)/Math.abs(eigen1)<.1){
 			w.append(Integer.toString(color)+" 0 0");//percent difference from first eigenvalue is small
-		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen2)/eigen2<Math.pow(10, scale-6)){
+		    }else if(Math.abs(data[i][j].getEigenvalue()-eigen2)/Math.abs(eigen2)<.1){
 			w.append("0 0 "+Integer.toString(color));//percent difference from second eigenvalue is small
 		    }else{
 			w.append("0 "+Integer.toString(color)+" 0");//some thing else happened
@@ -166,7 +166,7 @@ public class EigenNewton{
     }
 
     //tests every combination of variables, and goes from 10^-2 to 10^2
-    public static void genImages(Mat matrix, double eigen1, double eigen2, String filebase, String stashname){
+    public static void genImages(Mat matrix, double eigen1, double eigen2, String filebase){
 	int[] vars = {1,1,0};
 	for(int i = -2; i < 3; i++){
 	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xy_zoom_"+i+".ppm");
@@ -181,6 +181,8 @@ public class EigenNewton{
 	for(int i = -2; i < 3; i++){
 	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xz_zoom_"+i+".ppm");
 	}
-	Fixerupper.stash(stashname);
+	String dirname = "images_first_power";
+	System.out.println(dirname);
+	Fixerupper.stash(dirname);
     }
 }
