@@ -92,6 +92,17 @@ public class Mat{
 	return printstr;
     }
 
+    //linestring is used to print out the matrix as a line of entries with underscores
+    //used for filenames
+    public String toLineString(){
+	String retstr = "";
+	for(int i = 0; i < rows; i++){
+	    for(int j = 0; j < cols; j++){
+		retstr+="_"+Double.toString(getEntry(i,j));
+	    }
+	}
+	return retstr;
+    }
     public void printMat(){
 	System.out.println(this);
     }

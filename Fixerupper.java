@@ -3,16 +3,10 @@ import java.lang.InterruptedException;
 import java.io.File;
 public class Fixerupper{
     public static String convertPPMtoJPG(String filename){
-	try{
-	    String stem = filename.substring(0,filename.indexOf("."));
-	    Runtime rt = Runtime.getRuntime();
-	    String retstr = stem+".jpg";
-	    Process pr = rt.exec("convert "+filename+" "+stem+".jpg");
-	    return retstr;
-	}catch(IOException e){
-	    System.out.println(e);
-	    return "oops";
-	}
+	String stem = filename.substring(0,filename.indexOf(".ppm"));
+	String retstr = stem+".jpg";
+	runCommand("convert "+filename+" "+stem+".jpg", true);
+	return retstr;
     }
     
     //runCommand runs a command
@@ -41,10 +35,9 @@ public class Fixerupper{
 	for(int i = 0; i < files.length; i++){
 	    if(files[i].getName().endsWith(".ppm")){
 		name=convertPPMtoJPG(files[i].getName());
-		System.out.println("mv "+name+" "+dirname+"/");
 		runCommand("mv "+name+" "+dirname+"/", true);
-		System.out.println("rm "+name.substring(0,name.indexOf("."))+"ppm");
-		runCommand("rm "+name.substring(0,name.indexOf("."))+".ppm", true);
+		runCommand("rm "+name.substring(0,name.indexOf(".jpg"))+".ppm", true);
+		runCommand("rm "+name, true);
 	    }
 	}
 	System.out.println("Stashing images in directory complete");

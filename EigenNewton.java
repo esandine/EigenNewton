@@ -181,8 +181,24 @@ public class EigenNewton{
 	for(int i = -2; i < 3; i++){
 	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xz_zoom_"+i+".ppm");
 	}
-	String dirname = "images_first_power";
+	String dirname = filebase;
 	System.out.println(dirname);
 	Fixerupper.stash(dirname);
+    }
+
+    //this tests multiple changes of base by multiplying by a shuffling matrix on the right and on the left each iteration and stores them in seperate folders
+    public static void genImagesLevels(double eigen1, double eigen2, Mat shuffler, int levels){
+	String dirbase = "Eigens_"+Double.toString(eigen1)+"_"+Double.toString(eigen2)+
+	    "Shuffler_"+shuffler.toLineString();
+	Mat base = new Mat(eigen1, 0, 0, eigen2);
+	Mat inv = new Mat(2,2);
+	inv = shuffler.inverse();
+	for(int i = 0; i < levels; i++){
+	    if(i>0){
+		base.lMult(shuffler);
+		base.rMult(inv);
+	    }
+	    genImages(base, eigen1, eigen2, dirbase+"_level_"+Integer.toString(i));
+	}
     }
 }
