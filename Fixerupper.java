@@ -41,10 +41,10 @@ public class Fixerupper{
 	for(int i = 0; i < files.length; i++){
 	    if(files[i].getName().endsWith(".ppm")){
 		name=convertPPMtoJPG(files[i].getName());
-		System.out.println("mv "+name+" "+dirname+"/", true);
+		System.out.println("mv "+name+" "+dirname+"/");
 		runCommand("mv "+name+" "+dirname+"/", true);
-		System.out.println("rm "+name.substring(0,name.indexOf("."))+"ppm", true);
-		runCommand("rm "+name.substring(0,name.indexOf("."))+"ppm", true);
+		System.out.println("rm "+name.substring(0,name.indexOf("."))+"ppm");
+		runCommand("rm "+name.substring(0,name.indexOf("."))+".ppm", true);
 	    }
 	}
 	System.out.println("Stashing images in directory complete");
