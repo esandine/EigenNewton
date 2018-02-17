@@ -66,7 +66,7 @@ public class EigenNewton{
 	guess = initialguess;
 	int guesses = 0;
         while(f(matrix,guess).size()>Math.pow(10,scale-3)){
-	    if(guesses>25){
+	    if(guesses>50){
 		NewtonRet ret = new NewtonRet(guess.getEntry(0,0), guess.getEntry(1,0), guess.getEntry(2,0), guesses);
 		return ret;
 	    }else{
@@ -130,8 +130,43 @@ public class EigenNewton{
 	return ret;
     }
     
-    //image creation stuff
-    public static void writeToPPM(NewtonRet[][] data, String name, double eigen1, double eigen2, double scale){
+    //This colors in points based on the value of kantorovich's theorem for given points
+
+    public static double[][] kantorovichArray(Mat matrix, int[] vars, double scale){
+	Mat initialguess = new Mat(3,1);
+	double[][] ret = new double[500][500];
+	if(vars[0]==1&&vars[1]==1){
+	    for(int i = -250; i < 250; i++){
+		for(int j = -250; j < 250; j++){
+		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
+		    initialguess.setEntry(1,0,j/250.0*Math.pow(10,scale));
+		    ret[i+250][j+250]= kantorovich(matrix, initialguess);
+		}
+	    }
+	}else if((vars[0]==1)&&(vars[2]==1)){
+	    for(int i = -250; i < 250; i++){
+		for(int j = -250; j < 250; j++){
+		    initialguess.setEntry(0,0,i/250.0*Math.pow(10,scale));
+		    initialguess.setEntry(2,0,j/250.0*Math.pow(10,scale));
+		    ret[i+250][j+250]= kantorovich(matrix, initialguess);
+		}
+	    }
+	}else if((vars[1]==1)&&(vars[2]==1)){
+	    for(int i = -250; i < 250; i++){
+		for(int j = -250; j < 250; j++){
+		    initialguess.setEntry(1,0,i/100.0);
+		    initialguess.setEntry(2,0,j/100.0);
+		    ret[i+250][j+250]= kantorovich(matrix, initialguess);
+		}
+	    }
+	}else{
+	    System.out.println("BAD PARAMETERS FOR GUESSES");
+	}
+	return ret;
+    }
+    
+    //colors in a ppm file for NewtonMethod1
+    public static void writeToPPMNewtonMethod1(NewtonRet[][] data, String name, double eigen1, double eigen2, double scale){
 	try{
 	    File f = new File(name);
 	    f.delete();
@@ -159,27 +194,81 @@ public class EigenNewton{
 	    System.out.println(e);
 	}
     }
-    
+    //colors in a ppm file for NewtonMethod1
+    public static void writeToPPMKantorovichArray(double[][] data, String name){
+	try{
+	    File f = new File(name);
+	    f.delete();
+	    f.createNewFile();
+	    FileWriter w = new FileWriter(f, true);
+	    w.write("P3 "+data.length+" "+data[0].length+" 255\n");
+	    for(int i = 0; i < data.length; i++){
+		for(int j = 0; j < data[0].length; j++){
+		    if(data[i][j]<=0.5){
+			w.append("0 0 128");//corresponds to kantorovich's theorem being active and guaranteeing a root
+		    }else if(data[i][j]<256){
+			//a shade of red represents kantorovich being less than 256, darker the smaller
+			w.append(Long.toString(Math.round(data[i][j]))+" 0 0");
+		    }else{
+			//green represents kantorovich's theorem being extremely large
+			w.append("0 128 0");//some thing else happened
+		    }
+		    w.append("\n");
+		}
+		System.out.println(i);
+	    }
+	    w.close();
+	}catch(IOException e){
+	    System.out.println(e);
+	}
+    }
+   
     //does the process of writing an image file and stuff like that
-    public static void wholeShabang(Mat matrix, double eigen1, double eigen2, int[] vars, double scale, String filename){
-	writeToPPM(newtonsMethod1(matrix, eigen1, eigen2, vars, scale),filename,eigen1, eigen2, scale);
+    public static void wholeNewtonMethod1(Mat matrix, double eigen1, double eigen2, int[] vars, double scale, String filename){
+	writeToPPMNewtonMethod1(newtonsMethod1(matrix, eigen1, eigen2, vars, scale),filename,eigen1, eigen2, scale);
+    }
+
+    //does the process of writing an image file and stuff like that
+    public static void wholeKantorovichArray(Mat matrix, int[] vars, double scale, String filename){
+	writeToPPMKantorovichArray(kantorovichArray(matrix, vars, scale),filename);
     }
 
     //tests every combination of variables, and goes from 10^-2 to 10^2
-    public static void genImages(Mat matrix, double eigen1, double eigen2, String filebase){
+    public static void genImagesNewtonMethod1(Mat matrix, double eigen1, double eigen2, String filebase){
 	int[] vars = {1,1,0};
 	for(int i = -2; i < 3; i++){
-	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xy_zoom_"+i+".ppm");
+	    wholeNewtonMethod1(matrix, eigen1, eigen2, vars, i, filebase+"_xy_zoom_"+i+".ppm");
 	}
 	vars[0]=0;
 	vars[2]=1;
 	for(int i = -2; i < 3; i++){
-	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_yz_zoom_"+i+".ppm");
+	    wholeNewtonMethod1(matrix, eigen1, eigen2, vars, i, filebase+"_yz_zoom_"+i+".ppm");
 	}
 	vars[0]=1;
 	vars[1]=0;
 	for(int i = -2; i < 3; i++){
-	    wholeShabang(matrix, eigen1, eigen2, vars, i, filebase+"_xz_zoom_"+i+".ppm");
+	    wholeNewtonMethod1(matrix, eigen1, eigen2, vars, i, filebase+"_xz_zoom_"+i+".ppm");
+	}
+	String dirname = filebase;
+	System.out.println(dirname);
+	Fixerupper.stash(dirname);
+    }
+
+    //tests every combination of variables, and goes from 10^-2 to 10^2
+    public static void genImagesKantorovichArray(Mat matrix, double eigen1, double eigen2, String filebase){
+	int[] vars = {1,1,0};
+	for(int i = -2; i < 3; i++){
+	    wholeKantorovichArray(matrix, vars, i, filebase+"_xy_zoom_"+i+".ppm");
+	}
+	vars[0]=0;
+	vars[2]=1;
+	for(int i = -2; i < 3; i++){
+	    wholeKantorovichArray(matrix, vars, i, filebase+"_yz_zoom_"+i+".ppm");
+	}
+	vars[0]=1;
+	vars[1]=0;
+	for(int i = -2; i < 3; i++){
+	    wholeKantorovichArray(matrix, vars, i, filebase+"_xz_zoom_"+i+".ppm");
 	}
 	String dirname = filebase;
 	System.out.println(dirname);
@@ -187,9 +276,10 @@ public class EigenNewton{
     }
 
     //this tests multiple changes of base by multiplying by a shuffling matrix on the right and on the left each iteration and stores them in seperate folders
-    public static void genImagesLevels(double eigen1, double eigen2, Mat shuffler, int levels){
+    public static void genImagesNewtonMethod1Levels(double eigen1, double eigen2, Mat shuffler, int levels){
 	String dirbase = "Eigens_"+Double.toString(eigen1)+"_"+Double.toString(eigen2)+
 	    "Shuffler_"+shuffler.toLineString();
+	//Fixerupper.mkdir(dirbase+"test", true);
 	Mat base = new Mat(eigen1, 0, 0, eigen2);
 	Mat inv = new Mat(2,2);
 	inv = shuffler.inverse();
@@ -198,7 +288,25 @@ public class EigenNewton{
 		base.lMult(shuffler);
 		base.rMult(inv);
 	    }
-	    genImages(base, eigen1, eigen2, dirbase+"_level_"+Integer.toString(i));
+	    genImagesNewtonMethod1(base, eigen1, eigen2, dirbase+"_level_"+Integer.toString(i));
 	}
     }
+
+    //this tests multiple changes of base by multiplying by a shuffling matrix on the right and on the left each iteration and stores them in seperate folders
+    public static void genImagesKantorovichArrayLevels(double eigen1, double eigen2, Mat shuffler, int levels){
+	String dirbase = "Kant_Eigens_"+Double.toString(eigen1)+"_"+Double.toString(eigen2)+
+	    "Shuffler_"+shuffler.toLineString();
+	//Fixerupper.mkdir(dirbase+"test", true);
+	Mat base = new Mat(eigen1, 0, 0, eigen2);
+	Mat inv = new Mat(2,2);
+	inv = shuffler.inverse();
+	for(int i = 0; i < levels; i++){
+	    if(i>0){
+		base.lMult(shuffler);
+		base.rMult(inv);
+	    }
+	    genImagesKantorovichArray(base, eigen1, eigen2, dirbase+"_level_"+Integer.toString(i));
+	}
+    }
+
 }

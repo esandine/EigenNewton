@@ -24,6 +24,10 @@ public class Fixerupper{
 	    System.out.println(e);
 	}
     }
+    
+    public static void mkdir(String dir, Boolean wait){
+	runCommand("mkdir "+dir, true);
+    }
     //stash stores all of the ppm images in a directory given by the input
     public static void stash(String dirname){
 	File thisdir = new File(".");
