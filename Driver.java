@@ -8,7 +8,9 @@ public class Driver{
 	Mat guess = new Mat(3,1);
 	Mat m1 = new Mat(2,0,0,1);
 	Mat basis = new Mat(1,2,3,4);
-	NewtonRet[][] test = EigenNewton.NewtonMethodUnit(m1, 2.0, 1.0);
+
+
+	EigenNewton.genImagesKantorovichUnitLevels(2.0,1.0,basis, 5);
 	/*double d1 = 0;
 	double d2= 0;
 	for(int i =-100; i < 100; i++){
