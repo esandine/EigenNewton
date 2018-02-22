@@ -164,6 +164,26 @@ public class EigenNewton{
 	}
 	return ret;
     }
+
+    //NewtonRetUnit does Newton's method for every point on a parameterized unit ball
+    public static NewtonRet[][] NewtonMethodUnit(Mat matrix, double eigen1, double eigen2){
+	Mat initialguess = new Mat(3,1);
+	NewtonRet[][] ret = new NewtonRet[500][250];
+	for(int i = 0; i < 500; i++){
+	    for(int j = 0; j < 250; j++){
+		System.out.println("X: "+Math.cos(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
+		System.out.println("Y: "+Math.sin(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
+		System.out.println("Z: "+Math.cos(j/250.0*Math.PI));
+				   //ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
+		/*System.out.print(i);
+		  System.out.print(" ");
+		  System.out.println(j);*/
+	    }
+	}
+	return ret;
+    }
+
+
     
     //colors in a ppm file for NewtonMethod1
     public static void writeToPPMNewtonMethod1(NewtonRet[][] data, String name, double eigen1, double eigen2, double scale){
