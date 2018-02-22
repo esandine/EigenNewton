@@ -171,13 +171,14 @@ public class EigenNewton{
 	NewtonRet[][] ret = new NewtonRet[500][250];
 	for(int i = 0; i < 500; i++){
 	    for(int j = 0; j < 250; j++){
-		System.out.println("X: "+Math.cos(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
-		System.out.println("Y: "+Math.sin(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
-		System.out.println("Z: "+Math.cos(j/250.0*Math.PI));
-				   //ret[i+250][j+250]=new NewtonRet(newtonsMethod(matrix, initialguess, scale));
-		/*System.out.print(i);
-		  System.out.print(" ");
-		  System.out.println(j);*/
+		initialguess.setEntry(0,0,Math.cos(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
+		initialguess.setEntry(1,0,Math.sin(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
+		initialguess.setEntry(2,0,Math.cos(j/250.0*Math.PI));
+		//ret[i][j] = newtonsMethod(matrix, initialguess, 1.0);
+		if(kantorovich(matrix, initialguess)<0.5){
+		    System.out.println("YOO" + i + j);
+		}
+		//System.out.println(ret[i][j].getNumSteps());
 	    }
 	}
 	return ret;
