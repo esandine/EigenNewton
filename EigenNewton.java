@@ -192,7 +192,7 @@ public class EigenNewton{
 		initialguess.setEntry(0,0,Math.cos(i/250.0*Math.PI));
 		initialguess.setEntry(1,0,Math.sin(i/250.0*Math.PI));
 		initialguess.setEntry(2,0,j/50.0-5);
-		ret[i][j]=kantorovich(matrix, initialguess);
+		ret[j][i]=kantorovich(matrix, initialguess);//i & j are flipped to make the orientation more practical
 	    }
 	}
 	return ret;
