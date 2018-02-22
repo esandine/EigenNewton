@@ -168,12 +168,12 @@ public class EigenNewton{
     //NewtonRetUnit does Newton's method for every point on a parameterized unit ball
     public static NewtonRet[][] NewtonMethodUnit(Mat matrix, double eigen1, double eigen2){
 	Mat initialguess = new Mat(3,1);
-	NewtonRet[][] ret = new NewtonRet[500][250];
+	NewtonRet[][] ret = new NewtonRet[250][250];
 	for(int i = 0; i < 500; i++){
 	    for(int j = 0; j < 250; j++){
-		initialguess.setEntry(0,0,Math.cos(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
-		initialguess.setEntry(1,0,Math.sin(i/250.0*Math.PI)*Math.sin(j/250.0*Math.PI));
-		initialguess.setEntry(2,0,Math.cos(j/250.0*Math.PI));
+		initialguess.setEntry(0,0,Math.cos(i/125.0*Math.PI));
+		initialguess.setEntry(1,0,Math.sin(i/125.0*Math.PI));
+		initialguess.setEntry(2,0,j/25.0-5);
 		//ret[i][j] = newtonsMethod(matrix, initialguess, 1.0);
 		if(kantorovich(matrix, initialguess)<0.5){
 		    System.out.println("YOO" + i + j);
