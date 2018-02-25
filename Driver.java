@@ -10,7 +10,7 @@ public class Driver{
 	Mat basis = new Mat(1,2,3,4);
 
 
-	EigenNewton.genImagesKantorovichUnitLevels(2.0,1.0,basis, 5);
+	UnitCylindar.genImagesNewtonMethodUnitLevels(2.0,1.0,basis, 5);
 	/*double d1 = 0;
 	double d2= 0;
 	for(int i =-100; i < 100; i++){

@@ -165,43 +165,7 @@ public class EigenNewton{
 	return ret;
     }
 
-    //NewtonRetUnit does Newton's method for every point on a parameterized unit circle in the xy plane, and varies z along the z axis
-    public static NewtonRet[][] NewtonMethodUnit(Mat matrix, double eigen1, double eigen2){
-	Mat initialguess = new Mat(3,1);
-	NewtonRet[][] ret = new NewtonRet[250][250];
-	for(int i = 0; i < 500; i++){
-	    for(int j = 0; j < 250; j++){
-		initialguess.setEntry(0,0,Math.cos(i/125.0*Math.PI));
-		initialguess.setEntry(1,0,Math.sin(i/125.0*Math.PI));
-		initialguess.setEntry(2,0,j/25.0-5);
-		ret[i][j] = newtonsMethod(matrix, initialguess, 1.0);
-		if(kantorovich(matrix, initialguess)<0.5){
-		    System.out.println("YOO" + i + j);
-		}
-		//System.out.println(ret[i][j].getNumSteps());
-	    }
-	}
-	return ret;
-    }
-
-    public static double[][] KantorovichUnit(Mat matrix){
-	Mat initialguess = new Mat(3,1);
-	double[][] ret = new double[500][500];
-	for(int i = 0; i < 500; i++){
-	    for(int j = 0; j < 500; j++){
-		initialguess.setEntry(0,0,Math.cos(i/250.0*Math.PI));
-		initialguess.setEntry(1,0,Math.sin(i/250.0*Math.PI));
-		initialguess.setEntry(2,0,j/50.0-5);
-		ret[j][i]=kantorovich(matrix, initialguess);//i & j are flipped to make the orientation more practical
-	    }
-	}
-	return ret;
-    }
-
-
-
-    
-    //colors in a ppm file for NewtonMethod1
+    //colors in a ppm file for newtonMethod1
     public static void writeToPPMNewtonMethod1(NewtonRet[][] data, String name, double eigen1, double eigen2, double scale){
 	try{
 	    File f = new File(name);
@@ -230,7 +194,8 @@ public class EigenNewton{
 	    System.out.println(e);
 	}
     }
-    //colors in a ppm file for NewtonMethod1
+
+    //colors in a ppm file for newtonMethod1
     public static void writeToPPMKantorovichArray(double[][] data, String name){
 	try{
 	    File f = new File(name);
@@ -267,11 +232,6 @@ public class EigenNewton{
     //does the process of writing an image file and stuff like that
     public static void wholeKantorovichArray(Mat matrix, int[] vars, double scale, String filename){
 	writeToPPMKantorovichArray(kantorovichArray(matrix, vars, scale),filename);
-    }
-
-    //does the process of writing an image file and stuff like that
-    public static void wholeKantorovichUnit(Mat matrix, String filename){
-	writeToPPMKantorovichArray(KantorovichUnit(matrix),filename);
     }
 
     //tests every combination of variables, and goes from 10^-2 to 10^2
@@ -350,22 +310,4 @@ public class EigenNewton{
 	}
     }
 
-
-    //this tests multiple changes of base by multiplying by a shuffling matrix on the right and on the left each iteration and stores them in seperate folders
-    public static void genImagesKantorovichUnitLevels(double eigen1, double eigen2, Mat shuffler, int levels){
-	String dirbase = "CylKant_Eigens_"+Double.toString(eigen1)+"_"+Double.toString(eigen2)+
-	    "Shuffler_"+shuffler.toLineString();
-	//Fixerupper.mkdir(dirbase+"test", true);
-	Mat base = new Mat(eigen1, 0, 0, eigen2);
-	Mat inv = new Mat(2,2);
-	inv = shuffler.inverse();
-	for(int i = 0; i < levels; i++){
-	    if(i>0){
-		base.lMult(shuffler);
-		base.rMult(inv);
-	    }
-	    wholeKantorovichUnit(base, dirbase+"_level_"+Integer.toString(i)+".ppm");
-	}
-	Fixerupper.stash(dirbase);
-    }
 }
